@@ -6,13 +6,14 @@ import { googleLoginService, loginService } from '../Service/Service';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import { useAuth } from '../../AuthContext/AuthContext';
 
 const Login = () => {
   const [email,setEmail]=useState("");
   const [password,setPassword]=useState("");
   const [error,setError]=useState({});
   const navigate = useNavigate();
- 
+ const {setAuthorize}=useAuth();
    
   const handleSubmit=async(e)=>{
     e.preventDefault();
@@ -25,6 +26,7 @@ const Login = () => {
    if(res.data){
    const { user ,token } = res.data;
    if (user.role === "user") {
+     setAuthorize(true)
     // swal({ title: "Success", text: message, icon: "success", button: "Ok",});
      localStorage.setItem("token", token);
      localStorage.setItem("email", user.email);
@@ -34,6 +36,7 @@ const Login = () => {
      localStorage.setItem("lastName", user.lastName);
      navigate("/userHome");
    } else if (user.role === "admin") {
+    setAuthorize(true)
     localStorage.setItem("token", token);
     localStorage.setItem("email", user.email);
     localStorage.setItem("adminRole", user.role);
@@ -73,6 +76,7 @@ const Login = () => {
       const res = await googleLoginService(userDetails);
       const { token, user } = res.data;
       if (user.role === "user") {
+        setAuthorize(true)
         localStorage.setItem("token", token);
         localStorage.setItem("email", user.email);
         localStorage.setItem("role", user.role);
